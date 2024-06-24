@@ -1,2 +1,2 @@
-# ellipse-txt
+# ellipsetxt
 Text cleaning and analysis function

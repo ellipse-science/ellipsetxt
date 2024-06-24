@@ -1,5 +1,5 @@
 ######################################################
-#' @title clessnverse::countSentences
+#' @title ellipsetxt::countSentences
 #' @description counts and returns the numbers of sentences in a text block
 #' @param textblock : the text to analyse
 #' @return sentence.count : the number of sentences in the block
@@ -19,7 +19,7 @@ countSentences <- function(txt) {
 }
 
 ######################################################
-#' @title clessnverse::wordCount
+#' @title ellipsetxt::wordCount
 #' @description returns the number of words in a string
 #' @param txt the string
 #' @return an integer
@@ -38,7 +38,7 @@ countWords <- function(txt) {
 }
 
 ######################################################
-#' @title clessnverse::countVecSentences
+#' @title ellipsetxt::countVecSentences
 #' @description counts and returns the umber of sentences in a vector of text blocks (strings)
 #' @param vecCorpus the vector of text strings
 #' @return
