@@ -7,14 +7,12 @@
 #'
 #'
 #' @export
-countSentences <- function(txt) {
-  cleanCorpus <- stringr::str_replace_all(string = txt, pattern = "M\\.", replacement = "")
-  cleanCorpus <- stringr::str_replace_all(string = cleanCorpus, pattern = "Mr\\.", replacement = "")
-  cleanCorpus <- stringr::str_replace_all(string = cleanCorpus, pattern = "Dr\\.", replacement = "")
+count_sentences <- function(txt) {
+  clean_corpus <- remove_titles(txt)
 
-  dfSentences <- tibble::tibble(text = cleanCorpus) %>% tidytext::unnest_tokens(sentence, text, token="sentences",
-                                                              format="text")
-  sentence.count <- nrow(dfSentences)
+  df_sentences <- tibble::tibble(text =clean_corpus) %>% 
+    tidytext::unnest_tokens(sentence, text, token="sentences",format="text")
+  sentence_count <- nrow(df_sentences)
   return(sentence.count)
 }
 
@@ -28,7 +26,7 @@ countSentences <- function(txt) {
 #'
 #'
 #' @export
-countWords <- function(txt) {
+count_words <- function(txt) {
   txt <- gsub("[[:punct:][:blank:]]+", " ", txt)
   txt <- trimws(txt, which="both")
 
@@ -40,24 +38,22 @@ countWords <- function(txt) {
 ######################################################
 #' @title ellipsetxt::countVecSentences
 #' @description counts and returns the umber of sentences in a vector of text blocks (strings)
-#' @param vecCorpus the vector of text strings
-#' @return
+#' @param vector_of_corpus the vector of text strings
+#' @return The number of sentences in the entire vector of corpus of text
 #' @examples example
 #' @importFrom "dplyr" "%>%"
 #'
 #'
 #' @export
-countVecSentences <- function(vecCorpus) {
+count_vector_sentences <- function(vector_of_corpus) {
   sentence.count <- 0
 
   for (i in 1:length(vecCorpus)) {
-    cleanCorpus <- stringr::str_replace_all(string = vecCorpus[i], pattern = "M\\.", replacement = "")
-    cleanCorpus <- stringr::str_replace_all(string = cleanCorpus, pattern = "Mr\\.", replacement = "")
-    cleanCorpus <- stringr::str_replace_all(string = cleanCorpus, pattern = "Dr\\.", replacement = "")
-    
-    dfSentences <- tibble::tibble(text = cleanCorpus) %>% tidytext::unnest_tokens(sentence, text, token="sentences",
-                                                                format="text")
-    sentence.count <- sentence.count + nrow(dfSentences)# - sum(words(vecCorpus[i]) %in% patterns.titres == TRUE)
+    clean_corpus <- removeTitles(vector_of_corpus[i])
+
+    df_sentences <- tibble::tibble(text = clean_corpus) %>% 
+      tidytext::unnest_tokens(sentence, text, token="sentences", format="text")
+    sentence_count <- sentence_count + nrow(df_sentences)
   }
-  return(sentence.count)
+  return(sentence_count)
 }

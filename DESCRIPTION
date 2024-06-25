@@ -2,9 +2,18 @@ Package: ellipsetxt
 Type: Package
 Title: Ellipse Package for Text Analysis
 Version: 0.1.0
+Authors@R: c(
+    person("Alexandre", "Fortier-Chouinard", , "alexandre.fortier.chouinard@mail.utoronto.ca", role = "aut",
+           comment = c(ORCID = "0000-0002-6282-9709")),
+    person("Patrick", "Poncet", , "patrick@infoscope.ca", role = "aut"),
+    person("Yannick", "Dufresne", , "yannick.dufresne@pol.ulaval.ca", role = "cph")
+  )
 Author: Patrick Poncet
-Maintainer: Patrick Pobcet <patrick@infoscope.ca>
+Maintainer: Patrick Poncet <patrick@infoscope.ca>
 Description: This package contains function for text cleaning and analyssis for the CAPP au Universtté Laval.
 License: MIT
+URL: https://github.com/ellipse-science/ellipse
+BugReports: https://github.com/ellipse-science/ellipse/issues
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.3.1

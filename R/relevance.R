@@ -1,7 +1,7 @@
 ######################################################
 #' @title clessnverse::evaluateRelevanceIndex
 #' @description Evaluates and returns the relevance index of a text block (string)
-#' @param textToCheck - A character string
+#' @param test_to_check - A character string
 #' @param dictionary  - A vector of strings containing regex or words or words combinations
 #'			               or an objet of type dictionary from the quanteda package
 #' @param base	      - A string containing either "sentence" or "paragraph" which tells the
@@ -21,74 +21,72 @@
 #'
 #'
 #' @export
-evaluateRelevanceIndex <- function (textToCheck, dictionary, base = "sentence", method = "dfm") {
-  relevanceIndex <- 0
+evaluate_relevance_index <- function (test_to_check, dictionary, base = "sentence", method = "dfm") {
+  relevance_index <- 0
 
-  if (is.na(textToCheck) || is.null(textToCheck) || nchar(textToCheck) == 0) return(relevanceIndex)
+  if (is.na(test_to_check) || is.null(test_to_check) || nchar(test_to_check) == 0) return(relevance_index)
 
   if (base == "paragraph") {
-    vec.textToCheck <- vector()
-    vec.textToCheck <- strsplit(textToCheck, "\n\n")[[1]]
+    vec_test_to_check <- vector()
+    vec_test_to_check <- strsplit(test_to_check, "\n\n")[[1]]
 
-    for (i in 1:length(vec.textToCheck)) {
+    for (i in 1:length(vec_test_to_check)) {
       if (method == "dfm") {
         ###  DFM METHOD
-        string.to.check <- vec.textToCheck[i]
-        if (!is.na(string.to.check)) {
+        string_to_check <- vec_test_to_check[i]
+        if (!is.na(string_to_check)) {
           # repérer le nombre de mots du dictionnaire
           # sur le sujet d'intérêt présents dans le paragraphe
-          dfmA <- quanteda::dfm(string.to.check, dictionary = dictionary)
+          dfm_a <- quanteda::dfm(string_to_check, dictionary = dictionary)
           # compter les phrases mentionnant le
           # sujet d'intérêt en excluant les NA
-          if (length(dfmA@x) != 0 && dfmA@x > 0) relevanceIndex <- relevanceIndex + 1
+          if (length(dfm_a@x) != 0 && dfm_a@x > 0) relevance_index <- relevance_index + 1
         }
       }
       else {
         ### REGEX OU WORDS MATCHING
-        string.to.check <- stringr::str_replace_all(vec.textToCheck[i], "[[:punct:]]", "")
-        if ( TRUE %in% stringr::str_detect(string.to.check, dictionary) ) relevanceIndex <- relevanceIndex + 1
+        string_to_check <- stringr::str_replace_all(vec_test_to_check[i], "[[:punct:]]", "")
+        if ( TRUE %in% stringr::str_detect(string_to_check, dictionary) ) relevance_index <- relevance_index + 1
       }
     }
 
-    relevanceIndex <- relevanceIndex / length(vec.textToCheck)
+    relevance_index <- relevance_index / length(vec_test_to_check)
   } #if base == paragraph
 
   if (base == "sentence") {
     # M., Mr. et Dr. ne signifient pas une fin de phrase, donc supprimer ces mots
-    textToCheck <- stringr::str_replace_all(string = textToCheck, pattern = "M\\.", replacement = "")
-    textToCheck <- stringr::str_replace_all(string = textToCheck, pattern = "Mr\\.", replacement = "")
-    textToCheck <- stringr::str_replace_all(string = textToCheck, pattern = "Dr\\.", replacement = "")
+    test_to_check <- remove_titles(test_to_check)
 
     # séparer le texte en phrases, tout en minuscules
-    dfSentences <- tibble::tibble(text = textToCheck) %>%
+    df_sentences <- tibble::tibble(text = test_to_check) %>%
       tidytext::unnest_tokens(sentence, text, token="sentences",format="text", to_lower = T)
 
     count <- 0
 
-    for (i in 1:nrow(dfSentences)) {
-      string.to.check <- dfSentences$sentence[i]
+    for (i in 1:nrow(df_sentences)) {
+      string_to_check <- df_sentences$sentence[i]
       if (method == "dfm") {
         ###  DFM METHOD
-        if (!is.na(string.to.check)) {
+        if (!is.na(string_to_check)) {
           # repérer le nombre de mots du dictionnaire
           # sur le sujet d'intérêt présents dans la phrase
-          dfmA <- quanteda::dfm(string.to.check, dictionary = dictionary)
+          dfm_a <- quanteda::dfm(string_to_check, dictionary = dictionary)
           # compter les phrases mentionnant le
           # sujet d'intérêt en excluant les NA
-          if (length(dfmA@x) != 0 && dfmA@x > 0) count <- count + 1
+          if (length(dfm_a@x) != 0 && dfm_a@x > 0) count <- count + 1
         }
       } else {
         ### REGEX OU WORDS MATCHING
-        if ( TRUE %in% stringr::str_detect(stringr::str_replace_all(string.to.check, "[[:punct:]]", ""), dictionary) )
+        if ( TRUE %in% stringr::str_detect(stringr::str_replace_all(string_to_check, "[[:punct:]]", ""), dictionary) )
           count <- count + 1
       }
     }
     # pondérer les phrases concernant la COVID-19 en fonction
     # du nombre total de phrases dans l'intervention
-    relevanceIndex <- count / nrow(dfSentences)
-    if (is.nan(relevanceIndex)) relevanceIndex <- 0
+    relevance_index <- count / nrow(df_sentences)
+    if (is.nan(relevance_index)) relevance_index <- 0
   } #if base == sentence
 
-  return(relevanceIndex)
+  return(relevance_index)
 }
 
