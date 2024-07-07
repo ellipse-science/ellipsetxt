@@ -1,7 +1,7 @@
 ######################################################
 #' @title clessnverse::evaluateRelevanceIndex
 #' @description Evaluates and returns the relevance index of a text block (string)
-#' @param test_to_check - A character string
+#' @param txt - A character string
 #' @param dictionary  - A vector of strings containing regex or words or words combinations
 #'			               or an objet of type dictionary from the quanteda package
 #' @param base	      - A string containing either "sentence" or "paragraph" which tells the
@@ -21,19 +21,21 @@
 #'
 #'
 #' @export
-evaluate_relevance_index <- function (test_to_check, dictionary, base = "sentence", method = "dfm") {
+evaluate_relevance_index <- function(txt, dictionary, base = "sentence", method = "dfm") {
   relevance_index <- 0
 
-  if (is.na(test_to_check) || is.null(test_to_check) || nchar(test_to_check) == 0) return(relevance_index)
+  if (is.na(txt) || is.null(txt) || nchar(txt) == 0) {
+    return(relevance_index)
+  }
 
   if (base == "paragraph") {
-    vec_test_to_check <- vector()
-    vec_test_to_check <- strsplit(test_to_check, "\n\n")[[1]]
+    vec_txt <- vector()
+    vec_txt <- strsplit(txt, "\n\n")[[1]]
 
-    for (i in 1:length(vec_test_to_check)) {
+    for (i in 1:length(vec_txt)) {
       if (method == "dfm") {
         ###  DFM METHOD
-        string_to_check <- vec_test_to_check[i]
+        string_to_check <- vec_txt[i]
         if (!is.na(string_to_check)) {
           # repérer le nombre de mots du dictionnaire
           # sur le sujet d'intérêt présents dans le paragraphe
@@ -45,20 +47,20 @@ evaluate_relevance_index <- function (test_to_check, dictionary, base = "sentenc
       }
       else {
         ### REGEX OU WORDS MATCHING
-        string_to_check <- stringr::str_replace_all(vec_test_to_check[i], "[[:punct:]]", "")
+        string_to_check <- stringr::str_replace_all(vec_txt[i], "[[:punct:]]", "")
         if ( TRUE %in% stringr::str_detect(string_to_check, dictionary) ) relevance_index <- relevance_index + 1
       }
     }
 
-    relevance_index <- relevance_index / length(vec_test_to_check)
+    relevance_index <- relevance_index / length(vec_txt)
   } #if base == paragraph
 
   if (base == "sentence") {
     # M., Mr. et Dr. ne signifient pas une fin de phrase, donc supprimer ces mots
-    test_to_check <- remove_titles(test_to_check)
+    txt <- remove_titles(txt)
 
     # séparer le texte en phrases, tout en minuscules
-    df_sentences <- tibble::tibble(text = test_to_check) %>%
+    df_sentences <- tibble::tibble(text = txt) %>%
       tidytext::unnest_tokens(sentence, text, token="sentences",format="text", to_lower = T)
 
     count <- 0

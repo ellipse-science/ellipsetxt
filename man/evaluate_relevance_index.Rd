@@ -4,15 +4,10 @@
 \alias{evaluate_relevance_index}
 \title{clessnverse::evaluateRelevanceIndex}
 \usage{
-evaluate_relevance_index(
-  test_to_check,
-  dictionary,
-  base = "sentence",
-  method = "dfm"
-)
+evaluate_relevance_index(txt, dictionary, base = "sentence", method = "dfm")
 }
 \arguments{
-\item{test_to_check}{- A character string}
+\item{txt}{- A character string}
 
 \item{dictionary}{- A vector of strings containing regex or words or words combinations
 or an objet of type dictionary from the quanteda package}
